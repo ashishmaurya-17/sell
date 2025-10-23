@@ -18,6 +18,13 @@
         /* Small CSS tweaks */
         body {
             font-family: 'Inter', sans-serif; /* A clean, modern font */
+            /* Add padding bottom to body to account for the fixed bottom nav on small screens */
+            padding-bottom: 56px; /* Height of the bottom-nav-mobile */
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            body {
+                padding-bottom: 0; /* Remove padding on tablet/desktop */
+            }
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         
@@ -30,6 +37,18 @@
         }
         #cart-sidebar.translate-x-0 {
             transform: translateX(0);
+        }
+
+        /* Thumb zone optimization: Increase tap size for product buttons */
+        .add-to-cart-btn, .preview-btn {
+            min-height: 44px; /* Apple minimum touch target size */
+            display: flex; /* Flex is already used, just ensuring it */
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease-out; /* Add micro-interaction feedback */
+        }
+        .add-to-cart-btn:active, .preview-btn:active {
+            transform: scale(0.98); /* Subtle press effect */
         }
     </style>
 </head>
@@ -285,6 +304,26 @@
     </div>
     <div id="cart-overlay" class="fixed inset-0 z-40 bg-black/50 hidden"></div>
 
+    <nav id="bottom-nav-mobile" class="fixed bottom-0 left-0 right-0 h-14 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-2xl z-50 sm:hidden">
+        <div class="flex justify-around items-center h-full text-sm">
+            <a href="#home" class="flex flex-col items-center p-1 text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-house fa-lg"></i>
+                <span class="text-xs mt-0.5">Home</span>
+            </a>
+            <a href="#bundles" class="flex flex-col items-center p-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                <i class="fa-solid fa-layer-group fa-lg"></i>
+                <span class="text-xs mt-0.5">Bundles</span>
+            </a>
+            <a href="#how" class="flex flex-col items-center p-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                <i class="fa-solid fa-circle-question fa-lg"></i>
+                <span class="text-xs mt-0.5">Guide</span>
+            </a>
+            <a href="#contact" class="flex flex-col items-center p-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                <i class="fa-solid fa-envelope fa-lg"></i>
+                <span class="text-xs mt-0.5">Contact</span>
+            </a>
+        </div>
+    </nav>
 
     <script src="app.js"></script>
 </body>
