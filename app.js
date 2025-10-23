@@ -119,9 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         products.forEach(product => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105';
+            // Added transition-colors for a smoother dark mode experience
+            card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-[1.02] transition-colors';
             card.innerHTML = `
-                <img src="${product.thumbnail}" alt="${product.name}" class="w-full h-48 object-cover">
+                <img src="${product.thumbnail}" alt="${product.name}" class="w-full h-48 object-cover" loading="lazy">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold mb-2">${product.name}</h3>
                     <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${product.description}</p>
@@ -277,6 +278,25 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCartUI();
         toggleCart(true); // Open cart to show item was added
     }
+    
+    /**
+     * Replaces the cart content with a single product and immediately initiates checkout.
+     * @param {string} productId - The ID of the product to buy immediately.
+     */
+    async function buyNow(productId) {
+        const product = allProducts.find(p => p.id.toString() === productId);
+        if (!product) return;
+
+        // 1. Clear cart and add only this item
+        cart = [{ ...product, quantity: 1 }];
+        saveCart();
+        updateCartUI();
+        toggleCart(false); // Close cart sidebar
+
+        // 2. Proceed to checkout with the single item
+        await handleCheckout();
+    }
+
 
     /**
      * Removes an item from the cart.
@@ -320,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="text-right">
                         <p class="font-semibold">$${(item.price * item.quantity).toFixed(2)}</p>
-                        <button class="remove-from-cart-btn text-sm text-red-500 hover:text-red-700" data-product-id="${item.id}">Remove</button>
+                        <button class="remove-from-cart-btn text-sm text-red-500 hover:text-red-700 active:scale-95 transition-transform" data-product-id="${item.id}">Remove</button>
                     </div>
                 </div>
             `).join('');
@@ -439,10 +459,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modal listeners
     modalClose.addEventListener('click', closePreviewModal);
+    
+    // UPDATED: Modal purchase now uses the direct buyNow function
     modalPurchase.addEventListener('click', (e) => {
-        addToCart(e.target.dataset.productId);
+        const productId = e.target.dataset.productId;
         closePreviewModal();
+        buyNow(productId); // Immediate checkout after closing modal
     });
+
     previewModal.addEventListener('click', (e) => {
         if (e.target === previewModal) { // Click on overlay
             closePreviewModal();
